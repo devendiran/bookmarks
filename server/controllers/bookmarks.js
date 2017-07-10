@@ -61,7 +61,7 @@ var createBookMarks = function (req, res) {
 var fetchAllBookMarks = function (req, res) {
     BookMarks.find({
         createdBy: req.user._id
-    }, function (err, bookmarks) {
+    }).sort({ 'createdAt': 1}).exec(function (err, bookmarks) {
         if (err) {
             console.log(err, 'Error occured while trying to fetch bookmarks by ' + req.user.email);
             return res.status(500).json({
