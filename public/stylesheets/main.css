@@ -75,6 +75,7 @@ body {
   left: 0;
   bottom: 0;
   right: 0;
+  background-color: rgba(23, 22, 22, 0.4);
 }
 
 .min-wid-400 {
@@ -120,4 +121,8 @@ body {
 
 .filter-container {
     position: relative;
+}
+
+.cursor-pointer {
+  cursor: pointer;
 }
