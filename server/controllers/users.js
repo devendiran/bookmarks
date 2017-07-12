@@ -1,3 +1,5 @@
+"use strict";
+
 var User = require('../models/users');
 var jwt = require('jsonwebtoken');
 var appConf = require('../../app.conf.json');
@@ -9,12 +11,11 @@ var getJWT = function (user) {
     });
 };
 
-var getValidTokenWithUserData = function (user) {
+var getValidToken = function (user) {
     user = user.toObject();
     delete user.password;
     return {
-        token: getJWT(user),
-        user: user
+        token: getJWT(user)
     }
 }
 
@@ -26,22 +27,24 @@ var fetchUser = function (user, cb) {
 
 
 var login = function (req, res, next) {
+    console.log('Inside login');
     fetchUser({
         email: req.body.email
     }, function (err, user) {
+    console.log('Inside login', err, user);
         if (!user || err) {
-            return res.status(500).json({
+            return res.status(401).json({
                 msg: "Authentication Failed",
-                err: err || "Couldn't find your Account."
+                err: err || "Unauthorized"
             });
         }
 
         user.comparePassword(req.body.password, function (err, isMatch) {
             if (isMatch) {
-                res.send(getValidTokenWithUserData(user));
+                res.send(getValidToken(user));
             } else {
                 console.log(err || 'Wrong password. Try again.', 'Error occured while login by user' + req.body.email);
-                res.status(500).json({
+                res.status(401).json({
                     msg: "Authentication Failed",
                     err: err || 'Wrong password. Try again.'
                 });
@@ -51,10 +54,10 @@ var login = function (req, res, next) {
 };
 
 var validateLogin = function (req, res, next) {
-
-    req.assert('email', 'required').notEmpty();
-    req.assert('email', 'valid email required').isEmail();
-    req.assert('password', '6 to 20 characters required').len(6, 20);
+    req.assert('email', 'Email address should not be empty').notEmpty();
+    req.assert('email', 'Enter a valid email.').isEmail();
+    req.assert('password', 'Password address should not be empty').notEmpty();
+    req.assert('password', 'Password must have atleast 6 to 20 char').len(6, 20);
 
     req.getValidationResult().then(function (result) {
         var err;
@@ -64,7 +67,7 @@ var validateLogin = function (req, res, next) {
                 err: result.mapped()
             };
             console.log('Error occured while login', err);
-            res.status(400).json(err);
+            return res.status(400).json(err);
         }
 
         next();
@@ -74,11 +77,13 @@ var validateLogin = function (req, res, next) {
 
 var validateUser = function (req, res, next) {
 
-    req.assert('email', 'required').notEmpty();
-    req.assert('username', 'required').notEmpty();
-    req.assert('email', 'valid email required').isEmail();
-    req.assert('password', '6 to 20 characters required').len(6, 20);
-
+    req.assert('email', 'Email address should not be empty').notEmpty();
+    req.assert('username', 'User Name address should not be empty').notEmpty();
+    req.assert('email', 'Enter a valid email.').isEmail();
+    req.assert('password', 'Password address should not be empty').notEmpty();
+    req.assert('password', 'Password must have atleast 6 to 20 char').len(6, 20);
+    req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password);
+    
     req.getValidationResult().then(function (result) {
         var err;
         if (!result.isEmpty()) {
@@ -87,7 +92,7 @@ var validateUser = function (req, res, next) {
                 err: result.mapped()
             };
             console.log(err, 'Error occured while trying to signup by user', req.body);
-            res.status(400).json(err);
+            return res.status(400).json(err);
         }
 
         next();
@@ -105,10 +110,11 @@ var signup = function (req, res, next) {
     user.save(function (err) {
         if (err) {
             res.status(500).json({
-                msg: err.code === 11000 ? 'Email address already exist.' : 'Internal Server error'
+                msg: err.code === 11000 ? 'Email address already exist.' : 'Internal Server error',
+                err: 'Unable to create new account'
             });
         } else {
-            res.send(getValidTokenWithUserData(user));
+            res.send(getValidToken(user));
         }
     });
 }
@@ -162,4 +168,4 @@ module.exports = {
     'validateUser': validateUser,
     'signup': signup,
     'isAuthenticated': isAuthenticated
-};
+}; 

@@ -1,22 +1,26 @@
 'use-strict';
 
 var BookMarks = require('../models/bookmarks');
-
+var util = require('../util');
 var validateBookMark = function (req, res, next) {
 
-    req.assert('title', 'required').notEmpty();
-    req.assert('url', 'required').notEmpty();
+    req.assert('title', 'Please enter a title').notEmpty();
+    req.assert('url', 'Please enter a url').notEmpty();
     // url regex validation must be there
 
     req.getValidationResult().then(function (result) {
         var err;
-        if (!result.isEmpty()) {
+        if (!result.isEmpty() || !util.isUrl(req.body.url)) {
             err = {
                 msg: "Bad request",
-                err: result.mapped()
+                err: ((result.isEmpty() && !util.isUrl(req.body.url)) ? {
+                    url:{
+                        msg:'Enter valid url'
+                    }
+                }: result.mapped())
             };
             console.log('Error occured while validating bookmarks', err);
-            res.status(400).json(err);
+            return res.status(400).json(err);
         }
 
         next();
@@ -60,7 +64,8 @@ var createBookMarks = function (req, res) {
 
 var fetchAllBookMarks = function (req, res) {
     BookMarks.find({
-        createdBy: req.user._id
+        createdBy: req.user._id,
+        isDeleted: false
     }).sort({ 'createdAt': 1}).exec(function (err, bookmarks) {
         if (err) {
             console.log(err, 'Error occured while trying to fetch bookmarks by ' + req.user.email);
@@ -76,7 +81,8 @@ var fetchAllBookMarks = function (req, res) {
 var fetchBookMark = function (req, res, next) {
     console.log(req.params.id, req.params)
     BookMarks.findOne({
-        _id: req.params.id
+        _id: req.params.id,
+        isDeleted: false
     }, function (err, bookmark) {
         if (err) {
             console.log(err, 'Error occured while trying to fetch bookmark with id' + req.params._id + ' by ' + req.user.email);
@@ -100,7 +106,9 @@ var fetchBookMarksByTag = function (req, res) {
     }
 
     BookMarks.find({
-        tags: req.params.tag
+        tags: req.params.tag,
+        createdBy: req.user._id,
+        isDeleted: false
     }).sort({ 'createdAt': 1}).exec(function (err, bookmarks) {
         if (err) {
             console.log(err, 'Error occured while trying to fetch bookmarks using tag by' + req.user.email);
@@ -119,7 +127,7 @@ var updateBookMark = function (req, res) {
     });
     bookmark.save(function (err, bookmark) {
         if (err) {
-            console.log(err, 'Error occured while trying to create bookmark with title ' + body.title + 'by ' + req.user.email);
+            console.log(err, 'Error occured while trying to create bookmark with title by ' + req.user.email);
             return res.status(500).json({
                 msg: "Internal Server error"
             });
