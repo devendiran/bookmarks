@@ -1,0 +1,123 @@
+html, body, #root, .main-container {
+  height: 100%;
+}
+
+body {
+  background: #eee !important;
+}
+
+.wrapper {
+  margin-top: 80px;
+  margin-bottom: 80px;
+}
+
+.form-signin {
+  max-width: 380px;
+  padding: 15px 35px 45px;
+  margin: 0 auto;
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+.form-signin .form-signin-heading, .form-signin .checkbox {
+  margin-bottom: 30px;
+}
+
+.form-signin-heading{
+    text-align: center;
+}
+
+.form-signin .checkbox {
+  font-weight: normal;
+}
+.form-signin .form-control {
+  position: relative;
+  font-size: 16px;
+  height: auto;
+  padding: 10px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.form-signin .form-control:focus {
+  z-index: 2;
+}
+.form-signin input[type="text"] {
+  margin-bottom: -1px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.form-signin input[type="password"] {
+  margin-bottom: 20px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.signup-link, .signin-link {
+    margin-top: 10px;
+    float: right;
+}
+
+.main-container { 
+  padding: 0px;
+}
+.font-13 {
+  font-size: 13px;
+}
+.m-r-2 {
+  margin-right: 2px;
+}
+.m-r-10 {
+  margin-right: 10px;
+}
+.fixed-dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+
+.min-wid-400 {
+  min-width: 400px;
+}
+
+
+
+.search-field {
+  display:flex;
+  position:realtive;
+  margin:5em auto;
+  width:50%;
+  margin: 10px 0px;
+}
+
+.search-field>input[type=text],
+.search-field>button {
+  display:block;
+  font:1.2em Myriad Pro;
+}
+
+.search-field>input[type=text] {
+  flex:1;
+  padding:0.6em;
+  border:0.2em ;
+}
+
+.search-field>button {
+  padding:0.6em 0.8em;
+  color:white;
+  border:none;
+}
+.search-field>button:hover {
+	cursor:pointer;
+}
+
+.add-bookmark-btn{
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.filter-container {
+    position: relative;
+}
